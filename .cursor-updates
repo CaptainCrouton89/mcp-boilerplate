@@ -1,0 +1,3 @@
+Created an MCP server for storing and retrieving information using vector embeddings with the ai-embeddings.vercel.app API. 
+
+- Added a requirements_gatherer tool manually to overcome MCP Maker tool issues. - Refactored code to work with conversation embeddings API

@@ -1,0 +1,26 @@
+{
+  "name": "mcp-conversation-memory",
+  "version": "1.0.0",
+  "description": "MCP server for storing and retrieving conversation memory",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "mcp-conversation-memory": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc && chmod 755 dist/index.js",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.2.0",
+    "axios": "^1.6.2",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.2"
+  },
+  "files": [
+    "dist"
+  ]
+}
