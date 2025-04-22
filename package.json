@@ -9,7 +9,8 @@
   },
   "scripts": {
     "build": "tsc && chmod 755 dist/index.js",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "install-server": "tsc && chmod 755 dist/index.js && node scripts/update-claude-config.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.2.0",

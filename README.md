@@ -1,6 +1,14 @@
-# MCP Embedding Storage Server
+# MCP Embedding Storage Server Boilerplate
 
-An MCP server for storing and retrieving information using vector embeddings via the [AI Embeddings API](https://ai-embeddings.vercel.app/).
+A starter template for building an MCP server that stores and retrieves information using vector embeddings. This boilerplate provides the foundation for creating your own embedding-based knowledge store that can integrate with Claude or other MCP-compatible AI assistants.
+
+## Purpose
+
+This boilerplate helps you quickly start building:
+
+- A personal knowledge base that remembers information for your AI assistant
+- A semantic search interface for your documents or knowledge
+- A vector store integration for AI assistants
 
 ## Features
 
@@ -11,27 +19,39 @@ An MCP server for storing and retrieving information using vector embeddings via
 
 ## How It Works
 
-This MCP server connects to the AI Embeddings API, which:
+This MCP server template connects to vector embedding APIs to:
 
-1. Processes content and breaks it into sections
-2. Generates embeddings for each section
-3. Stores both the content and embeddings in a database
-4. Enables semantic search using vector similarity
+1. Process content and break it into sections
+2. Generate embeddings for each section
+3. Store both the content and embeddings in a database
+4. Enable semantic search using vector similarity
 
-When you search, the API finds the most relevant sections of stored content based on the semantic similarity of your query to the stored embeddings.
+When you search, the system finds the most relevant sections of stored content based on the semantic similarity of your query to the stored embeddings.
 
-## Installation
+## Getting Started
 
 ```bash
-# Install with npm
-npm install -g mcp-embedding-storage
+# Clone the boilerplate
+git clone https://github.com/yourusername/mcp-embedding-storage-boilerplate.git
+cd mcp-embedding-storage-boilerplate
 
-# Or with pnpm
-pnpm add -g mcp-embedding-storage
+# Install dependencies
+pnpm install
 
-# Or with yarn
-yarn global add mcp-embedding-storage
+# Build the project
+pnpm run build
+
+# Start the server
+pnpm start
 ```
+
+## Configuring for Development
+
+After cloning and building, you'll need to:
+
+1. Update the `package.json` with your project details
+2. Modify the API integration in `src/` to use your preferred embedding service
+3. Customize the tools and resources in `src/index.ts`
 
 ## Usage with Claude for Desktop
 
@@ -40,8 +60,8 @@ Add the following configuration to your `claude_desktop_config.json` file:
 ```json
 {
   "mcpServers": {
-    "embedding-storage": {
-      "command": "mcp-embedding-storage"
+    "your-embedding-storage": {
+      "command": "node /path/to/your/dist/index.js"
     }
   }
 }
@@ -49,7 +69,7 @@ Add the following configuration to your `claude_desktop_config.json` file:
 
 Then restart Claude for Desktop to connect to the server.
 
-## Available Tools
+## Implementing Tools
 
 ### store-content
 
@@ -72,7 +92,7 @@ Parameters:
 - `query`: The search query
 - `maxMatches` (optional): Maximum number of matches to return
 
-## Available Resources
+## Implementing Resources
 
 ### search://{query}
 
@@ -80,7 +100,7 @@ Resource template for searching content.
 
 Example usage: `search://machine learning basics`
 
-## Available Prompts
+## Implementing Prompts
 
 ### store-new-content
 
@@ -99,35 +119,14 @@ Parameters:
 
 - `query`: The search query
 
-## API Integration
+## Integration Options
 
-This MCP server integrates with the AI Embeddings API at https://ai-embeddings.vercel.app/ with the following endpoints:
+You can integrate this boilerplate with various embedding APIs and vector databases:
 
-1. **Generate Embeddings** (`POST /api/generate-embeddings`)
-
-   - Generates embeddings for content and stores them in the database
-   - Required parameters: `content` and `path`
-
-2. **Vector Search** (`POST /api/vector-search`)
-   - Searches for content based on semantic similarity
-   - Required parameter: `prompt`
-
-## Building from Source
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/mcp-embedding-storage.git
-cd mcp-embedding-storage
-
-# Install dependencies
-pnpm install
-
-# Build the project
-pnpm run build
-
-# Start the server
-pnpm start
-```
+1. OpenAI Embeddings API
+2. Hugging Face embedding models
+3. Chroma, Pinecone, or other vector databases
+4. Vercel AI SDK
 
 ## License
 
