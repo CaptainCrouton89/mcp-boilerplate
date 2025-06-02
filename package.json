@@ -1,11 +1,11 @@
 {
-  "name": "mcp-conversation-memory",
+  "name": "mcp-server-boilerplate",
   "version": "1.0.0",
-  "description": "MCP server for storing and retrieving conversation memory",
+  "description": "A starter template for building MCP (Model Context Protocol) servers",
   "main": "dist/index.js",
   "type": "module",
   "bin": {
-    "mcp-conversation-memory": "./dist/index.js"
+    "mcp-server-boilerplate": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc && chmod 755 dist/index.js",

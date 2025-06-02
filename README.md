@@ -1,39 +1,40 @@
-# MCP Embedding Storage Server Boilerplate
+# MCP Server Boilerplate
 
-A starter template for building an MCP server that stores and retrieves information using vector embeddings. This boilerplate provides the foundation for creating your own embedding-based knowledge store that can integrate with Claude or other MCP-compatible AI assistants.
+A starter template for building MCP (Model Context Protocol) servers. This boilerplate provides a clean foundation for creating your own MCP server that can integrate with Claude, Cursor, or other MCP-compatible AI assistants.
 
 ## Purpose
 
 This boilerplate helps you quickly start building:
 
-- A personal knowledge base that remembers information for your AI assistant
-- A semantic search interface for your documents or knowledge
-- A vector store integration for AI assistants
+- Custom tools for AI assistants
+- Resource providers for dynamic content
+- Prompt templates for common operations
+- Integration points for external APIs and services
 
 ## Features
 
-- Store content with automatically generated embeddings
-- Search content using semantic similarity
-- Access content through both tools and resources
-- Use pre-defined prompts for common operations
+- Simple "hello-world" tool example
+- TypeScript support with proper type definitions
+- Easy installation scripts for different MCP clients
+- Clean project structure ready for customization
 
 ## How It Works
 
-This MCP server template connects to vector embedding APIs to:
+This MCP server template provides:
 
-1. Process content and break it into sections
-2. Generate embeddings for each section
-3. Store both the content and embeddings in a database
-4. Enable semantic search using vector similarity
+1. A basic server setup using the MCP SDK
+2. Example tool implementation
+3. Build and installation scripts
+4. TypeScript configuration for development
 
-When you search, the system finds the most relevant sections of stored content based on the semantic similarity of your query to the stored embeddings.
+The included example demonstrates how to create a simple tool that takes a name parameter and returns a greeting.
 
 ## Getting Started
 
 ```bash
 # Clone the boilerplate
-git clone https://github.com/yourusername/mcp-embedding-storage-boilerplate.git
-cd mcp-embedding-storage-boilerplate
+git clone <your-repo-url>
+cd mcp-server-boilerplate
 
 # Install dependencies
 pnpm install
@@ -45,88 +46,151 @@ pnpm run build
 pnpm start
 ```
 
-## Configuring for Development
+## Installation Scripts
 
-After cloning and building, you'll need to:
+This boilerplate includes convenient installation scripts for different MCP clients:
 
-1. Update the `package.json` with your project details
-2. Modify the API integration in `src/` to use your preferred embedding service
-3. Customize the tools and resources in `src/index.ts`
+```bash
+# For Claude Desktop
+pnpm run install-desktop
 
-## Usage with Claude for Desktop
+# For Cursor
+pnpm run install-cursor
 
-Add the following configuration to your `claude_desktop_config.json` file:
+# For Claude Code
+pnpm run install-code
+
+# Generic installation
+pnpm run install-server
+```
+
+These scripts will build the project and automatically update the appropriate configuration files.
+
+## Usage with Claude Desktop
+
+The installation script will automatically add the configuration, but you can also manually add it to your `claude_desktop_config.json` file:
 
 ```json
 {
   "mcpServers": {
-    "your-embedding-storage": {
-      "command": "node /path/to/your/dist/index.js"
+    "your-server-name": {
+      "command": "node",
+      "args": ["/path/to/your/dist/index.js"]
     }
   }
 }
 ```
 
-Then restart Claude for Desktop to connect to the server.
+Then restart Claude Desktop to connect to the server.
 
-## Implementing Tools
+## Customizing Your Server
 
-### store-content
+### Adding Tools
 
-Stores content with automatically generated embeddings.
+Tools are functions that the AI assistant can call. Here's the basic structure:
 
-Parameters:
+```typescript
+server.tool(
+  "tool-name",
+  "Description of what the tool does",
+  {
+    // Zod schema for parameters
+    param1: z.string().describe("Description of parameter"),
+    param2: z.number().optional().describe("Optional parameter"),
+  },
+  async ({ param1, param2 }) => {
+    // Your tool logic here
+    return {
+      content: [
+        {
+          type: "text",
+          text: "Your response",
+        },
+      ],
+    };
+  }
+);
+```
 
-- `content`: The content to store
-- `path`: Unique identifier path for the content
-- `type` (optional): Content type (e.g., 'markdown')
-- `source` (optional): Source of the content
-- `parentPath` (optional): Path of the parent content (if applicable)
+### Adding Resources
 
-### search-content
+Resources provide dynamic content that the AI can access:
 
-Searches for content using vector similarity.
+```typescript
+server.resource(
+  "resource://example/{id}",
+  "Description of the resource",
+  async (uri) => {
+    // Extract parameters from URI
+    const id = uri.path.split("/").pop();
 
-Parameters:
+    return {
+      contents: [
+        {
+          uri,
+          mimeType: "text/plain",
+          text: `Content for ${id}`,
+        },
+      ],
+    };
+  }
+);
+```
 
-- `query`: The search query
-- `maxMatches` (optional): Maximum number of matches to return
+### Adding Prompts
 
-## Implementing Resources
+Prompts are reusable templates:
 
-### search://{query}
+```typescript
+server.prompt(
+  "prompt-name",
+  "Description of the prompt",
+  {
+    // Parameters for the prompt
+    topic: z.string().describe("The topic to discuss"),
+  },
+  async ({ topic }) => {
+    return {
+      description: `A prompt about ${topic}`,
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: `Please help me with ${topic}`,
+          },
+        },
+      ],
+    };
+  }
+);
+```
 
-Resource template for searching content.
+## Project Structure
 
-Example usage: `search://machine learning basics`
+```
+├── src/
+│   └── index.ts          # Main server implementation
+├── scripts/              # Installation and utility scripts
+├── dist/                 # Compiled JavaScript (generated)
+├── package.json          # Project configuration
+├── tsconfig.json         # TypeScript configuration
+└── README.md            # This file
+```
 
-## Implementing Prompts
+## Development
 
-### store-new-content
+1. Make changes to `src/index.ts`
+2. Run `pnpm run build` to compile
+3. Test your server with `pnpm start`
+4. Use the installation scripts to update your MCP client configuration
 
-A prompt to help store new content with embeddings.
+## Next Steps
 
-Parameters:
-
-- `path`: Unique identifier path for the content
-- `content`: The content to store
-
-### search-knowledge
-
-A prompt to search for knowledge.
-
-Parameters:
-
-- `query`: The search query
-
-## Integration Options
-
-You can integrate this boilerplate with various embedding APIs and vector databases:
-
-1. OpenAI Embeddings API
-2. Hugging Face embedding models
-3. Chroma, Pinecone, or other vector databases
-4. Vercel AI SDK
+1. Update `package.json` with your project details
+2. Customize the server name and tools in `src/index.ts`
+3. Add your own tools, resources, and prompts
+4. Integrate with external APIs or databases as needed
 
 ## License
 
