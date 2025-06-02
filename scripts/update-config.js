@@ -41,10 +41,61 @@ const cursorConfigPath = path.join(os.homedir(), ".cursor/mcp.json");
 
 const claudeCodeConfigPath = path.join(os.homedir(), ".claude.json");
 
+// Function to parse .env.local file
+function parseEnvFile() {
+  const envPath = path.join(currentDir, ".env.local");
+  const envVars = {};
+
+  try {
+    if (fs.existsSync(envPath)) {
+      const envContent = fs.readFileSync(envPath, "utf8");
+      const lines = envContent.split("\n");
+
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+        // Skip empty lines and comments
+        if (trimmedLine && !trimmedLine.startsWith("#")) {
+          const equalIndex = trimmedLine.indexOf("=");
+          if (equalIndex > 0) {
+            const key = trimmedLine.substring(0, equalIndex).trim();
+            let value = trimmedLine.substring(equalIndex + 1).trim();
+
+            // Remove quotes if present
+            if (
+              (value.startsWith('"') && value.endsWith('"')) ||
+              (value.startsWith("'") && value.endsWith("'"))
+            ) {
+              value = value.slice(1, -1);
+            }
+
+            envVars[key] = value;
+          }
+        }
+      }
+
+      if (Object.keys(envVars).length > 0) {
+        console.log(
+          `📄 Found .env.local with ${
+            Object.keys(envVars).length
+          } environment variable(s)`
+        );
+      }
+    }
+  } catch (error) {
+    console.log(`⚠️  Could not read .env.local file: ${error.message}`);
+  }
+
+  return envVars;
+}
+
+// Parse environment variables
+const envVars = parseEnvFile();
+
 // Server configuration
 const serverConfig = {
   command: "node",
   args: [path.join(currentDir, "dist/index.js")],
+  ...(Object.keys(envVars).length > 0 && { env: envVars }),
 };
 
 // Function to update Claude Desktop config
