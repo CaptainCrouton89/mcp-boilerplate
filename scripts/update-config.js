@@ -10,7 +10,7 @@ const projectName = path.basename(currentDir);
 
 // Parse command line arguments
 const args = process.argv.slice(2);
-const validApps = ["cursor", "desktop", "code"];
+const validApps = ["cursor", "desktop", "code", "gemini"];
 
 // If no arguments provided, install to all apps
 let appsToInstall = validApps;
@@ -22,9 +22,11 @@ if (args.length > 0) {
     console.error(`❌ Invalid arguments: ${invalidArgs.join(", ")}`);
     console.error(`   Valid options: ${validApps.join(", ")}`);
     console.error(
-      `   Usage: node update-claude-config.js [cursor] [desktop] [code]`
+      `   Usage: node update-claude-config.js [cursor] [desktop] [code] [gemini]`
     );
-    console.error(`   Example: node update-claude-config.js cursor code`);
+    console.error(
+      `   Example: node update-claude-config.js cursor code gemini`
+    );
     console.error(`   (No arguments installs to all applications)`);
     process.exit(1);
   }
@@ -40,6 +42,8 @@ const claudeDesktopConfigPath = path.join(
 const cursorConfigPath = path.join(os.homedir(), ".cursor/mcp.json");
 
 const claudeCodeConfigPath = path.join(os.homedir(), ".claude.json");
+
+const geminiConfigPath = path.join(os.homedir(), ".gemini/settings.json");
 
 // Function to parse .env.local file
 function parseEnvFile() {
@@ -203,6 +207,41 @@ function updateClaudeCodeConfig() {
   }
 }
 
+// Function to update Gemini config
+function updateGeminiConfig() {
+  try {
+    // Ensure .gemini directory exists
+    const geminiDir = path.dirname(geminiConfigPath);
+    if (!fs.existsSync(geminiDir)) {
+      fs.mkdirSync(geminiDir, { recursive: true });
+    }
+
+    let config = {};
+
+    // Read existing config if it exists
+    if (fs.existsSync(geminiConfigPath)) {
+      const configData = fs.readFileSync(geminiConfigPath, "utf8");
+      config = JSON.parse(configData);
+    }
+
+    // Add our MCP server to the config
+    if (!config.mcpServers) {
+      config.mcpServers = {};
+    }
+
+    config.mcpServers[projectName] = serverConfig;
+
+    // Write the updated config back to the file
+    fs.writeFileSync(geminiConfigPath, JSON.stringify(config, null, 2), "utf8");
+    console.log(`✅ Successfully updated Gemini config at ${geminiConfigPath}`);
+    console.log(`   Added server: ${projectName}`);
+    return true;
+  } catch (error) {
+    console.log(`⚠️  Could not update Gemini config: ${error.message}`);
+    return false;
+  }
+}
+
 // Main execution
 console.log(`🚀 Installing MCP server: ${projectName}`);
 console.log(`   Server path: ${path.join(currentDir, "dist/index.js")}`);
@@ -212,6 +251,7 @@ console.log("");
 let claudeSuccess = false;
 let cursorSuccess = false;
 let claudeCodeSuccess = false;
+let geminiSuccess = false;
 
 // Run installations based on selected apps
 if (appsToInstall.includes("desktop")) {
@@ -226,8 +266,12 @@ if (appsToInstall.includes("code")) {
   claudeCodeSuccess = updateClaudeCodeConfig();
 }
 
+if (appsToInstall.includes("gemini")) {
+  geminiSuccess = updateGeminiConfig();
+}
+
 console.log("");
-if (claudeSuccess || cursorSuccess || claudeCodeSuccess) {
+if (claudeSuccess || cursorSuccess || claudeCodeSuccess || geminiSuccess) {
   console.log("🎉 Installation completed!");
 
   if (claudeSuccess) {
@@ -242,6 +286,10 @@ if (claudeSuccess || cursorSuccess || claudeCodeSuccess) {
 
   if (claudeCodeSuccess) {
     console.log("   • Restart claude-code to use the new server");
+  }
+
+  if (geminiSuccess) {
+    console.log("   • Restart Gemini to use the new server");
   }
 
   console.log("");
