@@ -14,6 +14,7 @@
     "install-cursor": "tsc && chmod 755 dist/index.js && node scripts/update-config.js cursor",
     "install-desktop": "tsc && chmod 755 dist/index.js && node scripts/update-config.js desktop",
     "install-code": "tsc && chmod 755 dist/index.js && node scripts/update-config.js code",
+    "install-code-library": "tsc && chmod 755 dist/index.js && node scripts/update-config.js code-library",
     "install-mcp": "tsc && chmod 755 dist/index.js && node scripts/update-config.js mcp"
   },
   "dependencies": {
