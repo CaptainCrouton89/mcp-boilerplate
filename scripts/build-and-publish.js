@@ -48,11 +48,14 @@ function updatePackageJson() {
 
 function main() {
   try {
-    // Check if we're in a git repo and have a clean working directory
+    // Check if we're in a git repo and commit any pending changes first
     try {
       const status = execSilent('git status --porcelain');
       if (status.trim()) {
-        console.log('Warning: Working directory is not clean. Continuing anyway...');
+        console.log('📝 Working directory has changes. Committing them first...');
+        exec('git add .');
+        exec('git commit -m "chore: commit changes before release"');
+        exec('git push');
       }
     } catch (e) {
       console.log('Warning: Not in a git repository or git not available');
