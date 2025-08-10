@@ -117,7 +117,7 @@ const packageName = packageJson.name;
 // Server configuration for npx (remote)
 const npxServerConfig = {
   command: "npx",
-  args: [`${packageName}@latest`],
+  args: ["-y", `${packageName}@latest`],
 };
 
 if (Object.keys(envVars).length > 0) {
