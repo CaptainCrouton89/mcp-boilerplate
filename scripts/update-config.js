@@ -109,14 +109,29 @@ function parseEnvFile() {
 // Parse environment variables
 const envVars = parseEnvFile();
 
-// Server configuration
-const serverConfig = {
+// Get package name from package.json
+const packageJsonPath = path.join(currentDir, "package.json");
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+const packageName = packageJson.name;
+
+// Server configuration for npx (remote)
+const npxServerConfig = {
+  command: "npx",
+  args: [`${packageName}@latest`],
+};
+
+if (Object.keys(envVars).length > 0) {
+  npxServerConfig.env = envVars;
+}
+
+// Server configuration for local development (mcp only)
+const localServerConfig = {
   command: "node",
   args: [path.join(currentDir, "dist/index.js")],
 };
 
 if (Object.keys(envVars).length > 0) {
-  serverConfig.env = envVars;
+  localServerConfig.env = envVars;
 }
 
 // Function to update Claude Desktop config
@@ -135,7 +150,7 @@ function updateClaudeDesktopConfig() {
       config.mcpServers = {};
     }
 
-    config.mcpServers[projectName] = serverConfig;
+    config.mcpServers[projectName] = npxServerConfig;
 
     // Write the updated config back to the file
     fs.writeFileSync(
@@ -176,7 +191,7 @@ function updateCursorConfig() {
       config.mcpServers = {};
     }
 
-    config.mcpServers[projectName] = serverConfig;
+    config.mcpServers[projectName] = npxServerConfig;
 
     // Write the updated config back to the file
     fs.writeFileSync(cursorConfigPath, JSON.stringify(config, null, 2), "utf8");
@@ -211,7 +226,7 @@ function updateClaudeCodeConfig() {
       config.mcpServers = {};
     }
 
-    config.mcpServers[projectName] = serverConfig;
+    config.mcpServers[projectName] = npxServerConfig;
 
     // Write the updated config back to the file
     fs.writeFileSync(
@@ -252,7 +267,7 @@ function updateClaudeCodeLibraryConfig() {
       config.mcpServers = {};
     }
 
-    config.mcpServers[projectName] = serverConfig;
+    config.mcpServers[projectName] = npxServerConfig;
 
     // Write the updated config back to the file
     fs.writeFileSync(
@@ -295,7 +310,7 @@ function updateGeminiConfig() {
       config.mcpServers = {};
     }
 
-    config.mcpServers[projectName] = serverConfig;
+    config.mcpServers[projectName] = npxServerConfig;
 
     // Write the updated config back to the file
     fs.writeFileSync(geminiConfigPath, JSON.stringify(config, null, 2), "utf8");
@@ -326,7 +341,7 @@ function updateMcpConfig() {
       config.mcpServers = {};
     }
 
-    config.mcpServers[projectName] = serverConfig;
+    config.mcpServers[projectName] = localServerConfig;
 
     // Write the updated config back to the file
     fs.writeFileSync(mcpConfigPath, JSON.stringify(config, null, 2), "utf8");
