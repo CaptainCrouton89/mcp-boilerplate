@@ -1,6 +1,6 @@
 {
   "name": "@r-mcp/boilerplate",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A starter template for building MCP (Model Context Protocol) servers",
   "main": "dist/index.js",
   "type": "module",
