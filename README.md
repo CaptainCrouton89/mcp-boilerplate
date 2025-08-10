@@ -31,6 +31,17 @@ The included example demonstrates how to create a simple tool that takes a name 
 
 ## Getting Started
 
+### Option 1: Use the Published Package (Recommended)
+
+You can use this MCP server directly without cloning:
+
+```bash
+# Run the server directly with npx
+npx @r-mcp/boilerplate
+```
+
+### Option 2: Customize and Develop
+
 ```bash
 # Clone the boilerplate
 git clone <your-repo-url>
@@ -51,37 +62,70 @@ pnpm start
 This boilerplate includes convenient installation scripts for different MCP clients:
 
 ```bash
-# For Claude Desktop
-pnpm run install-desktop
-
-# For Cursor
-pnpm run install-cursor
-
-# For Claude Code
-pnpm run install-code
-
-# Generic installation
+# Install to all MCP clients
 pnpm run install-server
+
+# Install to specific clients
+pnpm run install-desktop    # Claude Desktop
+pnpm run install-cursor     # Cursor IDE
+pnpm run install-code       # Claude Code CLI
+pnpm run install-code-library  # Claude Code Library
+
+# Install locally for development only
+pnpm run install-mcp         # Creates .mcp.json for local development
 ```
 
-These scripts will build the project and automatically update the appropriate configuration files.
+These scripts will:
+- Build the project automatically
+- Configure clients to use `npx @r-mcp/boilerplate@latest` (always gets the latest published version)
+- Only the local `.mcp.json` uses the development version (`node dist/index.js`)
 
-## Usage with Claude Desktop
+## Publishing Your Server
 
-The installation script will automatically add the configuration, but you can also manually add it to your `claude_desktop_config.json` file:
+To publish your customized MCP server:
 
+```bash
+# Build, commit, and publish to npm in one command
+pnpm run release
+```
+
+This script will:
+1. Update the package name based on directory name
+2. Increment the version number
+3. Build the project
+4. Commit changes to git
+5. Push to remote repository
+6. Publish to npm registry
+
+## Usage with MCP Clients
+
+The installation scripts automatically configure your MCP clients. For reference, here's what gets added:
+
+### Claude Desktop (`claude_desktop_config.json`):
 ```json
 {
   "mcpServers": {
-    "your-server-name": {
-      "command": "node",
-      "args": ["/path/to/your/dist/index.js"]
+    "boilerplate": {
+      "command": "npx",
+      "args": ["@r-mcp/boilerplate@latest"]
     }
   }
 }
 ```
 
-Then restart Claude Desktop to connect to the server.
+### Local Development (`.mcp.json`):
+```json
+{
+  "mcpServers": {
+    "boilerplate": {
+      "command": "node",
+      "args": ["/path/to/dist/index.js"]
+    }
+  }
+}
+```
+
+After running installation scripts, restart your MCP client to connect to the server.
 
 ## Customizing Your Server
 

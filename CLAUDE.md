@@ -14,9 +14,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm run install-desktop` - Install to Claude Desktop only
 - `pnpm run install-cursor` - Install to Cursor only  
 - `pnpm run install-code` - Install to Claude Code only
-- `pnpm run install-mcp` - Install to .mcp.json only
+- `pnpm run install-code-library` - Install to Claude Code Library only
+- `pnpm run install-mcp` - Install to .mcp.json only (local development)
 
 Installation scripts automatically build the project and update the respective configuration files.
+
+### Publishing and Release
+- `pnpm run release` - Build, commit, push, and publish to npm registry
+- `pnpm run build` - Compile TypeScript only
 
 ## Architecture
 
@@ -61,7 +66,17 @@ The `scripts/update-config.js` handles:
 - Environment variable parsing from .env.local
 - Automatic directory creation for config files
 - Command-line argument parsing for selective installation
-- Local .mcp.json file creation for project-specific MCP configuration
+- **Published Package Installation**: Most clients use `npx @r-mcp/boilerplate@latest` for automatic updates
+- **Local Development**: Only `.mcp.json` uses local `node dist/index.js` for development
+
+### Publishing Workflow
+
+The `scripts/build-and-publish.js` automates:
+1. Package name updates based on directory name
+2. Version increment (patch level)
+3. TypeScript compilation
+4. Git commit and push
+5. npm publishing with public access
 
 ### Key Dependencies
 
@@ -75,8 +90,20 @@ Optional `.env.local` file for environment variables that get automatically incl
 
 ## Development Workflow
 
+### Local Development
 1. Modify `src/index.ts` to add/update tools
 2. Run `pnpm run build` to compile
 3. Test with `pnpm start`
-4. Use installation scripts to update MCP client configurations
+4. Use `pnpm run install-mcp` to update local `.mcp.json`
 5. Restart MCP clients to load changes
+
+### Publishing Updates
+1. Make your changes and test locally
+2. Run `pnpm run release` to publish
+3. MCP clients using `npx @r-mcp/boilerplate@latest` will automatically get updates
+4. No need to reconfigure clients - they'll use the latest published version
+
+## Configuration Types
+
+- **Production Clients**: Use `npx @r-mcp/boilerplate@latest` (auto-updating)
+- **Local Development**: Use `node dist/index.js` (for testing changes before publishing)
