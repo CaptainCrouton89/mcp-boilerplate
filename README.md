@@ -1,6 +1,6 @@
 # MCP Server Boilerplate
 
-A starter template for building MCP (Model Context Protocol) servers. This boilerplate provides a clean foundation for creating your own MCP server that can integrate with Claude, Cursor, or other MCP-compatible AI assistants.
+A starter template for building MCP (Model Context Protocol) servers. This boilerplate provides a clean foundation for creating your own MCP server that can integrate with Claude Desktop, Cursor, Claude Code, Gemini, and other MCP-compatible AI assistants.
 
 ## Purpose
 
@@ -13,10 +13,12 @@ This boilerplate helps you quickly start building:
 
 ## Features
 
-- Simple "hello-world" tool example
-- TypeScript support with proper type definitions
-- Easy installation scripts for different MCP clients
-- Clean project structure ready for customization
+- Two example tools: "hello-world" and "get-mcp-docs"
+- TypeScript support with ES2022 target and ES modules
+- Multi-client installation scripts (Claude Desktop, Cursor, Claude Code, Gemini, etc.)
+- Automatic npm publishing workflow
+- Environment variable support via `.env.local`
+- Clean project structure with Zod validation
 
 ## How It Works
 
@@ -62,23 +64,25 @@ pnpm start
 This boilerplate includes convenient installation scripts for different MCP clients:
 
 ```bash
-# Install to all MCP clients
+# Install to all MCP clients (Claude Desktop, Cursor, Claude Code, Gemini, MCP)
 pnpm run install-server
 
 # Install to specific clients
-pnpm run install-desktop    # Claude Desktop
-pnpm run install-cursor     # Cursor IDE
-pnpm run install-code       # Claude Code CLI
-pnpm run install-code-library  # Claude Code Library
+pnpm run install-desktop       # Claude Desktop
+pnpm run install-cursor        # Cursor IDE
+pnpm run install-code          # Claude Code CLI
+pnpm run install-code-library  # Claude Code Library (~/.claude/mcp-library/)
+pnpm run install-mcp           # Local .mcp.json for development
 
-# Install locally for development only
-pnpm run install-mcp         # Creates .mcp.json for local development
+# You can also combine multiple targets:
+node scripts/update-config.js cursor code desktop
 ```
 
 These scripts will:
-- Build the project automatically
-- Configure clients to use `npx @r-mcp/boilerplate@latest` (always gets the latest published version)
+- Build the project automatically (TypeScript compilation + chmod permissions)
+- Configure clients to use `npx @r-mcp/<directory-name>@latest` (auto-updating)
 - Only the local `.mcp.json` uses the development version (`node dist/index.js`)
+- Include environment variables from `.env.local` if present
 
 ## Publishing Your Server
 
@@ -89,25 +93,30 @@ To publish your customized MCP server:
 pnpm run release
 ```
 
-This script will:
-1. Update the package name based on directory name
-2. Increment the version number
-3. Build the project
-4. Commit changes to git
-5. Push to remote repository
-6. Publish to npm registry
+This script (`scripts/build-and-publish.js`) will:
+1. Commit any pending changes first
+2. Update package name to `@r-mcp/<directory-name>`
+3. Update bin name to match directory
+4. Increment patch version automatically
+5. Build the TypeScript project
+6. Commit version bump to git
+7. Push to remote repository
+8. Publish to npm with public access
 
 ## Usage with MCP Clients
 
 The installation scripts automatically configure your MCP clients. For reference, here's what gets added:
 
-### Claude Desktop (`claude_desktop_config.json`):
+### Production Clients (Claude Desktop, Cursor, Claude Code, Gemini):
 ```json
 {
   "mcpServers": {
     "boilerplate": {
       "command": "npx",
-      "args": ["@r-mcp/boilerplate@latest"]
+      "args": ["-y", "@r-mcp/boilerplate@latest"],
+      "env": {
+        // Environment variables from .env.local are included here
+      }
     }
   }
 }
@@ -119,7 +128,10 @@ The installation scripts automatically configure your MCP clients. For reference
   "mcpServers": {
     "boilerplate": {
       "command": "node",
-      "args": ["/path/to/dist/index.js"]
+      "args": ["/absolute/path/to/dist/index.js"],
+      "env": {
+        // Environment variables from .env.local are included here
+      }
     }
   }
 }
@@ -214,27 +226,53 @@ server.prompt(
 
 ```
 ├── src/
-│   └── index.ts          # Main server implementation
-├── scripts/              # Installation and utility scripts
-├── dist/                 # Compiled JavaScript (generated)
-├── package.json          # Project configuration
-├── tsconfig.json         # TypeScript configuration
-└── README.md            # This file
+│   └── index.ts              # Main MCP server implementation
+├── scripts/
+│   ├── update-config.js      # Multi-client configuration installer
+│   └── build-and-publish.js  # Automated npm publishing workflow
+├── dist/                     # Compiled JavaScript (generated)
+├── package.json              # Project configuration
+├── tsconfig.json             # TypeScript configuration
+├── CLAUDE.md                 # Claude Code instructions
+├── .env.local                # Environment variables (optional)
+└── README.md                 # This file
 ```
 
-## Development
+## Development Workflow
 
+### Local Development
 1. Make changes to `src/index.ts`
-2. Run `pnpm run build` to compile
+2. Run `pnpm run build` to compile TypeScript
 3. Test your server with `pnpm start`
-4. Use the installation scripts to update your MCP client configuration
+4. Use `pnpm run install-mcp` for local testing
+5. Restart your MCP client to load changes
+
+### Publishing Updates
+1. Test your changes locally
+2. Run `pnpm run release` to publish to npm
+3. Clients using `npx @r-mcp/<your-package>@latest` auto-update
+4. No client reconfiguration needed
+
+## Environment Variables
+
+Create a `.env.local` file for environment-specific configuration:
+
+```bash
+# .env.local
+API_KEY=your-api-key
+DATABASE_URL=your-database-url
+```
+
+These variables are automatically included in MCP server configurations during installation.
 
 ## Next Steps
 
-1. Update `package.json` with your project details
+1. Fork or clone this boilerplate
 2. Customize the server name and tools in `src/index.ts`
 3. Add your own tools, resources, and prompts
-4. Integrate with external APIs or databases as needed
+4. Configure environment variables in `.env.local`
+5. Run `pnpm run release` to publish your server
+6. Install to clients with `pnpm run install-server`
 
 ## License
 
