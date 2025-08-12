@@ -33,7 +33,6 @@ scripts/
 ├── build-and-publish.js    # Automated release and npm publishing
 dist/                       # Compiled JavaScript output (generated)
 .env.local                  # Environment variables (optional)
-CLAUDE.md                   # This file - Claude Code instructions
 package.json                # NPM package configuration
 tsconfig.json               # TypeScript compiler configuration
 ```
