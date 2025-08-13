@@ -56,13 +56,12 @@ Optional `.env.local` file for environment variables that get automatically incl
 - **Production Clients**: Use `npx -y @r-mcp/<package>@latest` (auto-updating)
 - **Local Development**: Use `node /absolute/path/to/dist/index.js` (for testing changes before publishing)
 
-## Current Tools
-
-The boilerplate includes two example tools:
-
-1. **hello-world**: Takes a name parameter and returns a greeting
-2. **get-mcp-docs**: Returns example MCP server implementation code
-
 ## Additional Resources
 
 For more detailed examples of MCP server implementations (including weather APIs, resources, and prompts), please read `@mcp-guide.md` which contains comprehensive Python and TypeScript examples.
+
+## Additional Notes
+
+When the user asks you to test a tool, it means they want you to use the mcp corresponding to the tool you were working on. You should use the mcp**mcp-name**tool-name to execute the tool.
+
+If there is no change in output, it's likely because the CLI needs to be restarted.
